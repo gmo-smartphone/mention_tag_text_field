@@ -73,7 +73,7 @@ class _MentionTagTextFieldExampleState
                       color: Colors.blue,
                     ),
                     onPressed: () {
-                      log(_controller.getTextSendMention);
+                      log(_controller.getTextWithoutSymbols);
                     },
                   )
                 ],
@@ -139,9 +139,10 @@ class _MentionTagTextFieldExampleState
                     name: "${data['firstName']} ${data['lastName']}",
                     prefixSymbolInput: '「←RE：',
                     suffixSymbolInput: '」',
-                    prefixSymbolOutput: '',
+                    prefixSymbolOutput: '[Reply: ',
                     suffixSymbolOutput: ']',
                     data: searchResults[index]['id'],
+                    replyMsg: '123456'
                   );
                   mentionValue = null;
                   setState(() {});

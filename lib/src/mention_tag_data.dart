@@ -12,6 +12,9 @@ class MentionTagElement {
   final Widget? stylingWidget;
   final bool isReply;
 
+  /// For Reply
+  final String? replyMsg; 
+
   const MentionTagElement({
     required this.mentionSymbol,
     required this.mention,
@@ -22,5 +25,6 @@ class MentionTagElement {
     this.data,
     this.stylingWidget,
     this.isReply = false,
+    this.replyMsg,
   });
 }

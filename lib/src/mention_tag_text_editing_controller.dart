@@ -52,15 +52,17 @@ class MentionTagTextEditingController extends TextEditingController {
   }
 
   /// Returns text with mentions in it
-  String get getTextSendMention {
+  String get getTextWithoutSymbols {
     final List<MentionTagElement> tempList = List.from(_mentions);
 
     return super.text.replaceAllMapped(Constants.mentionEscape, (match) {
       final element = tempList.removeAt(0);
-      final String mention = mentionTagDecoration.showMentionStartSymbol
-          ? element.mention
-          : "${element.mentionSymbol}"
+      final isReply = element.isReply;
+      final textForMention =
           "${element.prefixSymbolOutput ?? ''}${element.data}${element.suffixSymbolOutput ?? ''}";
+      final textForReply =
+          "${element.prefixSymbolOutput ?? ''}to=${element.data} mid=${element.replyMsg}${element.suffixSymbolOutput ?? ''}";
+      final String mention = isReply ? textForReply : textForMention;
       return mention;
     });
   }
@@ -178,6 +180,7 @@ class MentionTagTextEditingController extends TextEditingController {
     String? prefixSymbolOutput,
     String? suffixSymbolOutput,
     Object? data,
+    String? replyMsg,
   }) {
     final indexCursor = selection.base.offset;
     final mentionTagElement = MentionTagElement(
@@ -188,6 +191,8 @@ class MentionTagTextEditingController extends TextEditingController {
       prefixSymbolOutput: prefixSymbolOutput,
       suffixSymbolOutput: suffixSymbolOutput,
       data: data,
+      replyMsg: replyMsg,
+      isReply: true,
     );
 
     final textPart = super.text.substring(0, indexCursor < 0 ? 0 : indexCursor);
@@ -393,7 +398,9 @@ class MentionTagTextEditingController extends TextEditingController {
             alignment: PlaceholderAlignment.middle,
             child: mention.stylingWidget ??
                 Text(
-                  mention.prefixSymbolInput + mention.mention + mention.suffixSymbolInput,
+                  mention.prefixSymbolInput +
+                      mention.mention +
+                      mention.suffixSymbolInput,
                   style: mentionTagDecoration.mentionTextStyle,
                 ),
           );
