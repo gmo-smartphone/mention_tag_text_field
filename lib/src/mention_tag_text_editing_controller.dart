@@ -52,14 +52,15 @@ class MentionTagTextEditingController extends TextEditingController {
   }
 
   /// Returns text with mentions in it
-  String get getTextForSend {
+  String get getTextSendMention {
     final List<MentionTagElement> tempList = List.from(_mentions);
 
     return super.text.replaceAllMapped(Constants.mentionEscape, (match) {
       final element = tempList.removeAt(0);
       final String mention = mentionTagDecoration.showMentionStartSymbol
           ? element.mention
-          : "${element.mentionSymbol}${element.prefixSymbol ?? ''}${element.data}${element.suffixSymbol ?? ''}";
+          : "${element.mentionSymbol}"
+          "${element.prefixSymbolOutput ?? ''}${element.data}${element.suffixSymbolOutput ?? ''}";
       return mention;
     });
   }
@@ -142,18 +143,50 @@ class MentionTagTextEditingController extends TextEditingController {
   }
 
   void addMentionWithoutSymbol({
-    required String label,
-    String? prefixSymbol,
-    String? suffixSymbol,
+    required String name,
+    String? prefixSymbolInput,
+    String? suffixSymbolInput,
+    String? prefixSymbolOutput,
+    String? suffixSymbolOutput,
     Object? data,
   }) {
-    final mention = label;
     final indexCursor = selection.base.offset;
     final mentionTagElement = MentionTagElement(
       mentionSymbol: '',
-      mention: mention,
-      prefixSymbol: prefixSymbol,
-      suffixSymbol: suffixSymbol,
+      mention: name,
+      prefixSymbolInput: prefixSymbolInput,
+      suffixSymbolInput: suffixSymbolInput,
+      prefixSymbolOutput: prefixSymbolOutput,
+      suffixSymbolOutput: suffixSymbolOutput,
+      data: data,
+    );
+
+    final textPart = super.text.substring(0, indexCursor < 0 ? 0 : indexCursor);
+    final indexPosition = textPart.countChar(Constants.mentionEscape);
+    _mentions.insert(indexPosition, mentionTagElement);
+
+    _replaceLastSubstringWithEscaping(
+      indexCursor < 0 ? 0 : indexCursor,
+      '',
+    );
+  }
+
+  void addReplyWithoutSymbol({
+    required String name,
+    String? prefixSymbolInput,
+    String? suffixSymbolInput,
+    String? prefixSymbolOutput,
+    String? suffixSymbolOutput,
+    Object? data,
+  }) {
+    final indexCursor = selection.base.offset;
+    final mentionTagElement = MentionTagElement(
+      mentionSymbol: '',
+      mention: name,
+      prefixSymbolInput: prefixSymbolInput,
+      suffixSymbolInput: suffixSymbolInput,
+      prefixSymbolOutput: prefixSymbolOutput,
+      suffixSymbolOutput: suffixSymbolOutput,
       data: data,
     );
 
@@ -360,7 +393,7 @@ class MentionTagTextEditingController extends TextEditingController {
             alignment: PlaceholderAlignment.middle,
             child: mention.stylingWidget ??
                 Text(
-                  mention.prefixSymbol + mention.mention + mention.suffixSymbol,
+                  mention.prefixSymbolInput + mention.mention + mention.suffixSymbolInput,
                   style: mentionTagDecoration.mentionTextStyle,
                 ),
           );

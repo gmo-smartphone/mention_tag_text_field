@@ -4,17 +4,23 @@ import 'package:flutter/material.dart';
 class MentionTagElement {
   final String mentionSymbol;
   final String mention;
-  final String? prefixSymbol;
-  final String? suffixSymbol;
+  final String? prefixSymbolInput;
+  final String? prefixSymbolOutput;
+  final String? suffixSymbolInput;
+  final String? suffixSymbolOutput;
   final Object? data;
   final Widget? stylingWidget;
+  final bool isReply;
 
   const MentionTagElement({
     required this.mentionSymbol,
     required this.mention,
-    this.prefixSymbol,
-    this.suffixSymbol,
+    this.prefixSymbolInput,
+    this.prefixSymbolOutput,
+    this.suffixSymbolInput,
+    this.suffixSymbolOutput,
     this.data,
     this.stylingWidget,
+    this.isReply = false,
   });
 }
