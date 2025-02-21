@@ -112,16 +112,41 @@ class MentionTagTextEditingController extends TextEditingController {
         ? "$mentionSymbol$label"
         : label;
     final MentionTagElement mentionTagElement = MentionTagElement(
-        mentionSymbol: mentionSymbol,
-        mention: mention,
-        data: data,
-        stylingWidget: stylingWidget);
+      mentionSymbol: mentionSymbol,
+      mention: mention,
+      data: data,
+      stylingWidget: stylingWidget,
+    );
 
     final textPart = super.text.substring(0, indexCursor);
     final indexPosition = textPart.countChar(Constants.mentionEscape);
     _mentions.insert(indexPosition, mentionTagElement);
 
     _replaceLastSubstringWithEscaping(indexCursor, _mentionInput!);
+  }
+
+  void addMentionCustom({
+    required String label,
+    Object? data,
+    Widget? stylingWidget,
+  }) {
+    final mention = label;
+    final indexCursor = selection.base.offset;
+    final MentionTagElement mentionTagElement = MentionTagElement(
+      mentionSymbol: '',
+      mention: mention,
+      data: data,
+      stylingWidget: stylingWidget,
+    );
+
+    final textPart = super.text.substring(0, indexCursor < 0 ? 0 : indexCursor);
+    final indexPosition = textPart.countChar(Constants.mentionEscape);
+    _mentions.insert(indexPosition, mentionTagElement);
+
+    _replaceLastSubstringWithEscaping(
+      indexCursor < 0 ? 0 : indexCursor,
+      mention,
+    );
   }
 
   void _replaceLastSubstringWithEscaping(int indexCursor, String replacement) {

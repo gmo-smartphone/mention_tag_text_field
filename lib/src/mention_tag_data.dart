@@ -6,9 +6,10 @@ class MentionTagElement {
   final String mention;
   final Object? data;
   final Widget? stylingWidget;
-  const MentionTagElement(
-      {required this.mentionSymbol,
-      required this.mention,
-      this.data,
-      this.stylingWidget});
+  const MentionTagElement({
+    required this.mentionSymbol,
+    required this.mention,
+    this.data,
+    this.stylingWidget,
+  });
 }
