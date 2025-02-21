@@ -5,8 +5,10 @@ class MentionTagDecoration {
     this.mentionStart = const ['@', '#'],
     this.mentionBreak = ' ',
     this.maxWords = 1,
-    this.mentionTextStyle =
-        const TextStyle(color: Colors.blue, fontWeight: FontWeight.w600),
+    this.mentionTextStyle = const TextStyle(
+      color: Colors.blue,
+      fontWeight: FontWeight.w600,
+    ),
     this.allowDecrement = true,
     this.allowEmbedding = false,
     this.showMentionStartSymbol = true,
