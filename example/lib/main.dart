@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:mention_tag_text_field/mention_tag_text_field.dart';
@@ -41,7 +42,7 @@ class _MentionTagTextFieldExampleState
   @override
   void initState() {
     super.initState();
-    _controller.setText = "Hello @Emily Johnson ";
+    onMention('E');
   }
 
   String? mentionValue;
@@ -63,7 +64,20 @@ class _MentionTagTextFieldExampleState
               const SizedBox(
                 height: 16,
               ),
-              mentionField(),
+              Row(
+                children: [
+                  Expanded(child: mentionField()),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.send,
+                      color: Colors.blue,
+                    ),
+                    onPressed: () {
+                      log(_controller.getTextSendMention);
+                    },
+                  )
+                ],
+              ),
             ],
           ),
         ),
@@ -79,19 +93,19 @@ class _MentionTagTextFieldExampleState
       minLines: 1,
       maxLines: 5,
       controller: _controller,
-      initialMentions: const [
-        ('@Emily Johnson', User(id: 1, name: 'Emily Johnson'), null)
-      ],
       onMention: onMention,
       mentionTagDecoration: MentionTagDecoration(
-          mentionStart: ['@', '#'],
-          mentionBreak: ' ',
-          allowDecrement: false,
-          allowEmbedding: false,
-          showMentionStartSymbol: false,
-          maxWords: null,
-          mentionTextStyle: TextStyle(
-              color: Colors.blue, backgroundColor: Colors.blue.shade50)),
+        mentionStart: ['@'],
+        mentionBreak: ' ',
+        allowDecrement: false,
+        allowEmbedding: false,
+        showMentionStartSymbol: false,
+        maxWords: null,
+        mentionTextStyle: TextStyle(
+          color: Colors.blue,
+          backgroundColor: Colors.blue.shade50,
+        ),
+      ),
       decoration: InputDecoration(
           hintText: 'Write something...',
           hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -118,21 +132,17 @@ class _MentionTagTextFieldExampleState
             itemCount: searchResults.length,
             reverse: true,
             itemBuilder: (context, index) {
+              final data = searchResults[index];
               return GestureDetector(
                 onTap: () {
-                  _controller.addMention(
-                      label:
-                          "${searchResults[index]['firstName']} ${searchResults[index]['lastName']}",
-                      data: User(
-                          id: searchResults[index]['id'],
-                          name:
-                              "${searchResults[index]['firstName']} ${searchResults[index]['lastName']}"),
-                      stylingWidget: _controller.mentions.length == 1
-                          ? MyCustomTag(
-                              controller: _controller,
-                              text:
-                                  "${searchResults[index]['firstName']} ${searchResults[index]['lastName']}")
-                          : null);
+                  _controller.addReplyWithoutSymbol(
+                    name: "${data['firstName']} ${data['lastName']}",
+                    prefixSymbolInput: '「←RE：',
+                    suffixSymbolInput: '」',
+                    prefixSymbolOutput: '',
+                    suffixSymbolOutput: ']',
+                    data: searchResults[index]['id'],
+                  );
                   mentionValue = null;
                   setState(() {});
                 },
@@ -204,7 +214,6 @@ class MyCustomTag extends StatelessWidget {
           GestureDetector(
             onTap: () {
               controller.remove(index: 1);
-              print(controller.text);
             },
             child: Icon(
               Icons.close,
