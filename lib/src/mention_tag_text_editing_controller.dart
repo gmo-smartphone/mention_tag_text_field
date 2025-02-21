@@ -146,7 +146,6 @@ class MentionTagTextEditingController extends TextEditingController {
     String? prefixSymbol,
     String? suffixSymbol,
     Object? data,
-    Widget? stylingWidget,
   }) {
     final mention = label;
     final indexCursor = selection.base.offset;
@@ -156,7 +155,6 @@ class MentionTagTextEditingController extends TextEditingController {
       prefixSymbol: prefixSymbol,
       suffixSymbol: suffixSymbol,
       data: data,
-      stylingWidget: stylingWidget,
     );
 
     final textPart = super.text.substring(0, indexCursor < 0 ? 0 : indexCursor);
@@ -203,9 +201,10 @@ class MentionTagTextEditingController extends TextEditingController {
     indexMentionStart = indexCursor - indexMentionStart;
 
     super.text = super.text.replaceRange(
-        !allowDecrement ? indexMentionStart - 1 : indexMentionStart,
-        indexCursor,
-        "$replacement${mentionTagDecoration.mentionBreak}");
+          !allowDecrement ? indexMentionStart - 1 : indexMentionStart,
+          indexCursor,
+          "$replacement${mentionTagDecoration.mentionBreak}",
+        );
 
     _temp = super.text;
   }
@@ -316,8 +315,7 @@ class MentionTagTextEditingController extends TextEditingController {
       _checkAndUpdateOnMention(value, mentionsCountTillCursor, indexCursor);
       if (mentionsCount == _mentions.length) return;
 
-      final MentionTagElement removedMention =
-          _mentions.removeAt(mentionsCountTillCursor);
+      final removedMention = _mentions.removeAt(mentionsCountTillCursor);
 
       if (mentionTagDecoration.allowDecrement &&
           _temp.length - value.length == 1) {
@@ -362,7 +360,7 @@ class MentionTagTextEditingController extends TextEditingController {
             alignment: PlaceholderAlignment.middle,
             child: mention.stylingWidget ??
                 Text(
-                  mention.mention,
+                  mention.prefixSymbol + mention.mention + mention.suffixSymbol,
                   style: mentionTagDecoration.mentionTextStyle,
                 ),
           );
