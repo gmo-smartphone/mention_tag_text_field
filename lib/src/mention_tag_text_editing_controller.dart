@@ -379,12 +379,14 @@ class MentionTagTextEditingController extends TextEditingController {
   }
 
   @override
-  TextSpan buildTextSpan(
-      {required BuildContext context,
-      TextStyle? style,
-      required bool withComposing}) {
+  TextSpan buildTextSpan({
+    required BuildContext context,
+    TextStyle? style,
+    required bool withComposing,
+  }) {
     final regexp = RegExp(
-        '(?=${Constants.mentionEscape})|(?<=${Constants.mentionEscape})');
+      '(?=${Constants.mentionEscape})|(?<=${Constants.mentionEscape})',
+    );
     final res = super.text.split(regexp);
     final List tempList = List.from(_mentions);
 
@@ -395,7 +397,6 @@ class MentionTagTextEditingController extends TextEditingController {
           final mention = tempList.removeAt(0);
 
           return WidgetSpan(
-            alignment: PlaceholderAlignment.middle,
             child: mention.stylingWidget ??
                 Text(
                   mention.prefixSymbolInput +
@@ -405,6 +406,7 @@ class MentionTagTextEditingController extends TextEditingController {
                 ),
           );
         }
+
         return TextSpan(text: e, style: style);
       }).toList(),
     );
