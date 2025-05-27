@@ -402,10 +402,8 @@ class MentionTagTextEditingController extends TextEditingController {
                   mention.prefixSymbolInput +
                       mention.mention +
                       mention.suffixSymbolInput,
-                  style: mentionTagDecoration.mentionTextStyle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
+            alignment: PlaceholderAlignment.middle,
           );
         }
 
