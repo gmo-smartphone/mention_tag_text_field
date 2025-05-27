@@ -55,16 +55,22 @@ class MentionTagTextEditingController extends TextEditingController {
   String get getTextWithoutSymbols {
     final List<MentionTagElement> tempList = List.from(_mentions);
 
-    return super.text.replaceAllMapped(Constants.mentionEscape, (match) {
-      final element = tempList.removeAt(0);
+    var text = super.text;
+    for (var element in tempList) {
       final isReply = element.isReply;
       final textForMention =
           "${element.prefixSymbolOutput ?? ''}${element.data}${element.suffixSymbolOutput ?? ''}";
       final textForReply =
           "${element.prefixSymbolOutput ?? ''}to=${element.data} mid=${element.replyMsg}${element.suffixSymbolOutput ?? ''}";
       final String mention = isReply ? textForReply : textForMention;
-      return mention;
-    });
+
+      text = text.replaceAll(
+        "${element.prefixSymbolInput ?? ''}${element.mention}${element.suffixSymbolInput ?? ''}",
+        mention,
+      );
+    }
+
+    return text;
   }
 
   /// The mentions or tags will be removed automatically using backspaces in TextField.
@@ -163,13 +169,14 @@ class MentionTagTextEditingController extends TextEditingController {
       data: data,
     );
 
+    final fullMention = "$prefixSymbolInput$name$suffixSymbolInput";
     final textPart = super.text.substring(0, indexCursor < 0 ? 0 : indexCursor);
     final indexPosition = textPart.countChar(Constants.mentionEscape);
     _mentions.insert(indexPosition, mentionTagElement);
 
     _replaceLastSubstringWithEscaping(
       indexCursor < 0 ? 0 : indexCursor,
-      '',
+      fullMention,
     );
   }
 
@@ -195,27 +202,28 @@ class MentionTagTextEditingController extends TextEditingController {
       isReply: true,
     );
 
+    final fullMention = "$prefixSymbolInput$name$suffixSymbolInput";
     final textPart = super.text.substring(0, indexCursor < 0 ? 0 : indexCursor);
     final indexPosition = textPart.countChar(Constants.mentionEscape);
     _mentions.insert(indexPosition, mentionTagElement);
 
     _replaceLastSubstringWithEscaping(
       indexCursor < 0 ? 0 : indexCursor,
-      '',
+      fullMention,
     );
   }
 
   void _replaceLastSubstringWithEscaping(int indexCursor, String replacement) {
     try {
-      final mentionLength = 1 + mentionTagDecoration.mentionBreak.length;
+      final mentionLength = 2 + mentionTagDecoration.mentionBreak.length;
       _replaceLastSubstring(
         indexCursor,
-        Constants.mentionEscape,
+        replacement,
         allowDecrement: false,
       );
 
       selection = TextSelection.collapsed(
-        offset: indexCursor - replacement.length + mentionLength,
+        offset: indexCursor + replacement.length + mentionLength,
       );
     } catch (e) {
       debugPrint(e.toString());
@@ -388,24 +396,22 @@ class MentionTagTextEditingController extends TextEditingController {
       '(?=${Constants.mentionEscape})|(?<=${Constants.mentionEscape})',
     );
     final res = super.text.split(regexp);
-    final List tempList = List.from(_mentions);
+    // final List<MentionTagElement> tempList = List.from(_mentions);
 
     return TextSpan(
       style: style,
       children: res.map((e) {
-        if (e == Constants.mentionEscape) {
-          final mention = tempList.removeAt(0);
-
-          return WidgetSpan(
-            child: mention.stylingWidget ??
-                Text(
-                  mention.prefixSymbolInput +
-                      mention.mention +
-                      mention.suffixSymbolInput,
-                ),
-            alignment: PlaceholderAlignment.middle,
-          );
-        }
+        // if (e == Constants.mentionEscape) {
+        //   final mention = tempList.removeAt(0);
+        //   final prefixSymbolInput = mention.prefixSymbolInput ?? '';
+        //   final dataMention = mention.mention;
+        //   final suffixSymbolInput = mention.suffixSymbolInput ?? '';
+        //   final mentionText = "$prefixSymbolInput$dataMention$suffixSymbolInput";
+        //   return TextSpan(
+        //     text: mentionText,
+        //     style: mentionTagDecoration.mentionTextStyle,
+        //   );
+        // }
 
         return TextSpan(text: e, style: style);
       }).toList(),
