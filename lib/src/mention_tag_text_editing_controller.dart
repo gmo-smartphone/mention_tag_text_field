@@ -217,7 +217,7 @@ class MentionTagTextEditingController extends TextEditingController {
       );
 
       selection = TextSelection.collapsed(
-        offset: indexCursor + mentionLength,
+        offset: (indexCursor == 0 ? 1 : indexCursor) + mentionLength,
       );
     } catch (e) {
       debugPrint(e.toString());
