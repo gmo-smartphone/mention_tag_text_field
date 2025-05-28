@@ -389,6 +389,9 @@ class MentionTagTextEditingController extends TextEditingController {
     final regexp = RegExp(
       '(?=${Constants.mentionEscape})|(?<=${Constants.mentionEscape})',
     );
+    final specialRegExp = RegExp(r'[\^$*.\[\]{}()?\-"!@#%&/\,><:;_~`+='
+        "'"
+        ']');
     final res = super.text.split(regexp);
     final List<MentionTagElement> tempList = List.from(_mentions);
     final maxLengthUserName = mentionTagDecoration.maxLengthUserName;
@@ -403,7 +406,8 @@ class MentionTagTextEditingController extends TextEditingController {
           final user = maxLengthUserName != null
               ? mention.mention.length > maxLengthUserName
                   ? mention.mention.replaceRange(
-                      maxLengthUserName,
+                      maxLengthUserName -
+                          (mention.mention.contains(specialRegExp) ? 0 : 2),
                       mention.mention.length,
                       '...',
                     )
@@ -416,6 +420,10 @@ class MentionTagTextEditingController extends TextEditingController {
               style: mentionTagDecoration.mentionTextStyle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              strutStyle: StrutStyle(
+                fontSize: mentionTagDecoration.mentionTextStyle.fontSize,
+                height: mentionTagDecoration.mentionTextStyle.height,
+              ),
             ),
           );
         }
