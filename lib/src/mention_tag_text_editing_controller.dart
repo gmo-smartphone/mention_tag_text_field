@@ -55,22 +55,16 @@ class MentionTagTextEditingController extends TextEditingController {
   String get getTextWithoutSymbols {
     final List<MentionTagElement> tempList = List.from(_mentions);
 
-    var text = super.text;
-    for (var element in tempList) {
+    return super.text.replaceAllMapped(Constants.mentionEscape, (match) {
+      final element = tempList.removeAt(0);
       final isReply = element.isReply;
       final textForMention =
           "${element.prefixSymbolOutput ?? ''}${element.data}${element.suffixSymbolOutput ?? ''}";
       final textForReply =
           "${element.prefixSymbolOutput ?? ''}to=${element.data} mid=${element.replyMsg}${element.suffixSymbolOutput ?? ''}";
       final String mention = isReply ? textForReply : textForMention;
-
-      text = text.replaceAll(
-        "${element.prefixSymbolInput ?? ''}${element.mention}${element.suffixSymbolInput ?? ''}",
-        mention,
-      );
-    }
-
-    return text;
+      return mention;
+    });
   }
 
   /// The mentions or tags will be removed automatically using backspaces in TextField.
@@ -215,10 +209,10 @@ class MentionTagTextEditingController extends TextEditingController {
 
   void _replaceLastSubstringWithEscaping(int indexCursor, String replacement) {
     try {
-      final mentionLength = 2 + mentionTagDecoration.mentionBreak.length;
+      final mentionLength = 1 + mentionTagDecoration.mentionBreak.length;
       _replaceLastSubstring(
         indexCursor,
-        replacement,
+        Constants.mentionEscape,
         allowDecrement: false,
       );
 
@@ -396,22 +390,35 @@ class MentionTagTextEditingController extends TextEditingController {
       '(?=${Constants.mentionEscape})|(?<=${Constants.mentionEscape})',
     );
     final res = super.text.split(regexp);
-    // final List<MentionTagElement> tempList = List.from(_mentions);
+    final List<MentionTagElement> tempList = List.from(_mentions);
+    final maxLengthUserName = mentionTagDecoration.maxLengthUserName;
 
     return TextSpan(
       style: style,
       children: res.map((e) {
-        // if (e == Constants.mentionEscape) {
-        //   final mention = tempList.removeAt(0);
-        //   final prefixSymbolInput = mention.prefixSymbolInput ?? '';
-        //   final dataMention = mention.mention;
-        //   final suffixSymbolInput = mention.suffixSymbolInput ?? '';
-        //   final mentionText = "$prefixSymbolInput$dataMention$suffixSymbolInput";
-        //   return TextSpan(
-        //     text: mentionText,
-        //     style: mentionTagDecoration.mentionTextStyle,
-        //   );
-        // }
+        if (e == Constants.mentionEscape) {
+          final mention = tempList.removeAt(0);
+          final prefix = mention.prefixSymbolInput ?? '';
+          final suffix = mention.suffixSymbolInput ?? '';
+          final user = maxLengthUserName != null
+              ? mention.mention.length > maxLengthUserName
+                  ? mention.mention.replaceRange(
+                      maxLengthUserName,
+                      mention.mention.length,
+                      '...',
+                    )
+                  : mention.mention
+              : mention.mention;
+
+          return WidgetSpan(
+            child: Text(
+              prefix + user + suffix,
+              style: mentionTagDecoration.mentionTextStyle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          );
+        }
 
         return TextSpan(text: e, style: style);
       }).toList(),

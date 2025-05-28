@@ -5,6 +5,7 @@ class MentionTagDecoration {
     this.mentionStart = const ['@', '#'],
     this.mentionBreak = ' ',
     this.maxWords = 1,
+    this.maxLengthUserName,
     this.mentionTextStyle = const TextStyle(
       color: Colors.blue,
       fontWeight: FontWeight.w600,
@@ -30,6 +31,9 @@ class MentionTagDecoration {
   /// The max amount of words a mention can have, must be greater than zero or null.
   /// In case of null, any number of words will be considered. That means onMention callback will send all the words after mention symbol unless you call setMention.
   final int? maxWords;
+
+  /// The max amount of words a mention can have, must be greater than zero or null.
+  final int? maxLengthUserName;
 
   /// Allow mentions to remove in decrement.
   ///
