@@ -209,7 +209,7 @@ class MentionTagTextEditingController extends TextEditingController {
 
   void _replaceLastSubstringWithEscaping(int indexCursor, String replacement) {
     try {
-      final mentionLength = 1 + mentionTagDecoration.mentionBreak.length;
+      final mentionLength = mentionTagDecoration.mentionBreak.length;
       _replaceLastSubstring(
         indexCursor,
         Constants.mentionEscape,
@@ -217,7 +217,7 @@ class MentionTagTextEditingController extends TextEditingController {
       );
 
       selection = TextSelection.collapsed(
-        offset: indexCursor + replacement.length + mentionLength,
+        offset: indexCursor + mentionLength,
       );
     } catch (e) {
       debugPrint(e.toString());
