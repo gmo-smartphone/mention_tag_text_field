@@ -36,13 +36,7 @@ class _EnvironmentVariableExampleState
               Column(
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      _controller.addMention(
-                          label: variable,
-                          data: suggestion,
-                          stylingWidget:
-                              EnvironmentVariableSpan(suggestion: suggestion));
-                    },
+                    onTap: () {},
                     child: Text(variable),
                   )
                 ],

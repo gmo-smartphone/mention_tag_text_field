@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:mention_tag_text_field/mention_tag_text_field.dart';
 import 'package:http/http.dart' as http;
+import 'package:rich_text_controller/rich_text_controller.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,6 +37,7 @@ class MentionTagTextFieldExample extends StatefulWidget {
 
 class _MentionTagTextFieldExampleState
     extends State<MentionTagTextFieldExample> {
+  final focus = FocusNode();
   final MentionTagTextEditingController _controller =
       MentionTagTextEditingController();
 
@@ -61,9 +63,7 @@ class _MentionTagTextFieldExampleState
                 suggestions()
               else
                 const Expanded(child: SizedBox()),
-              const SizedBox(
-                height: 16,
-              ),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(child: mentionField()),
@@ -85,18 +85,19 @@ class _MentionTagTextFieldExampleState
     );
   }
 
-  MentionTagTextField mentionField() {
+  Widget mentionField() {
     final border = OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide.none);
+      borderRadius: BorderRadius.circular(10.0),
+      borderSide: BorderSide.none,
+    );
     return MentionTagTextField(
+      focusNode: focus,
       keyboardType: TextInputType.multiline,
       minLines: 1,
       maxLines: 5,
       controller: _controller,
-      onMention: onMention,
       mentionTagDecoration: MentionTagDecoration(
-        mentionStart: ['@'],
-        mentionBreak: ' ',
+        mentionBreak: '',
         allowDecrement: false,
         allowEmbedding: false,
         showMentionStartSymbol: false,
@@ -106,15 +107,22 @@ class _MentionTagTextFieldExampleState
           backgroundColor: Colors.blue.shade50,
         ),
       ),
+      style: const TextStyle(
+        fontSize: 16.0,
+        color: Colors.black,
+      ),
       decoration: InputDecoration(
-          hintText: 'Write something...',
-          hintStyle: TextStyle(color: Colors.grey.shade400),
-          filled: true,
-          fillColor: Colors.grey.shade100,
-          border: border,
-          focusedBorder: border,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0)),
+        hintText: 'Write something...',
+        hintStyle: TextStyle(color: Colors.grey.shade400),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        border: border,
+        focusedBorder: border,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 12.0,
+        ),
+      ),
     );
   }
 
@@ -135,25 +143,23 @@ class _MentionTagTextFieldExampleState
               final data = searchResults[index];
               return GestureDetector(
                 onTap: () {
-                  _controller.addReplyWithoutSymbol(
-                    name: "${data['firstName']} ${data['lastName']}",
-                    prefixSymbolInput: '「←RE：',
-                    suffixSymbolInput: '」',
-                    prefixSymbolOutput: '[Reply: ',
-                    suffixSymbolOutput: ']',
-                    data: searchResults[index]['id'],
-                    replyMsg: '123456'
+                  _controller.mention(
+                    text: "[TO: ${data['firstName']} ${data['lastName']}]",
+                    data: searchResults[index]['id'].toString(),
                   );
-                  mentionValue = null;
+                  focus.requestFocus();
                   setState(() {});
                 },
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundImage:
-                        NetworkImage(searchResults[index]['image']),
+                    backgroundImage: NetworkImage(
+                      searchResults[index]['image'],
+                    ),
                   ),
                   title: Text(
-                      "${searchResults[index]['firstName']} ${searchResults[index]['lastName']}"),
+                    "${searchResults[index]['firstName']} "
+                    "${searchResults[index]['lastName']}",
+                  ),
                   subtitle: Text(
                     "@${searchResults[index]['username']}",
                     style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
@@ -182,49 +188,6 @@ class _MentionTagTextFieldExampleState
       debugPrint(e.toString());
     }
     return null;
-  }
-}
-
-class MyCustomTag extends StatelessWidget {
-  const MyCustomTag({
-    super.key,
-    required this.controller,
-    required this.text,
-  });
-
-  final MentionTagTextEditingController controller;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-      decoration: BoxDecoration(
-          color: Colors.yellow.shade50,
-          borderRadius: const BorderRadius.all(Radius.circular(50))),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(text,
-              style: TextStyle(
-                color: Colors.yellow.shade700,
-              )),
-          const SizedBox(
-            width: 6.0,
-          ),
-          GestureDetector(
-            onTap: () {
-              controller.remove(index: 1);
-            },
-            child: Icon(
-              Icons.close,
-              size: 12,
-              color: Colors.yellow.shade700,
-            ),
-          )
-        ],
-      ),
-    );
   }
 }
 
