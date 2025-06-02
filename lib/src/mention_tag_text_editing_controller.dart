@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mention_tag_text_field/src/constants.dart';
-import 'package:mention_tag_text_field/src/custom_ellipsis_text.dart';
+import 'package:mention_tag_text_field/src/mention_ellipsis_text.dart';
 import 'package:mention_tag_text_field/src/mention_tag_data.dart';
 import 'package:mention_tag_text_field/src/mention_tag_decoration.dart';
 import 'package:mention_tag_text_field/src/string_extensions.dart';
@@ -400,7 +400,6 @@ class MentionTagTextEditingController extends TextEditingController {
           final mention = tempList.removeAt(0);
           final prefix = mention.prefixSymbolInput ?? '';
           final suffix = mention.suffixSymbolInput ?? '';
-          // final user = _getName(mention.mention);
 
           return WidgetSpan(
             child: CustomEllipsisText(

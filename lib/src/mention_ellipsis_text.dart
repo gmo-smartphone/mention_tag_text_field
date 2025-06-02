@@ -23,10 +23,11 @@ class CustomEllipsisText extends StatelessWidget {
         maxLines: maxLines,
       );
 
+      /// Calculate the width of the text
       textPainter.layout(maxWidth: constraints.maxWidth);
 
+      /// If the text exceeds the maximum number of lines, truncate it
       if (textPainter.didExceedMaxLines) {
-        // Sử dụng phương thức calculateTruncatedText đã định nghĩa ở trên
         final truncatedText = _calculateTruncatedText(
           text,
           constraints.maxWidth,
@@ -62,35 +63,46 @@ class CustomEllipsisText extends StatelessWidget {
       ellipsis: ellipsis,
     );
 
-    // Kiểm tra xem text có cần cắt không
+    /// Get the width of the text
     textPainter.layout(maxWidth: double.infinity);
+
+    /// If the text fits within the maximum width, return it
     if (textPainter.width <= maxWidth) {
-      return text; // Không cần cắt
+      return text;
     }
 
-    // Tính toán số ký tự có thể hiển thị
+    /// Variables for binary search
     int low = 0;
     int high = text.length;
     int best = 0;
 
+    /// Binary search to find the best truncation point
     while (low <= high) {
-      int mid = (low + high) ~/ 2;
-      String truncated = text.substring(0, mid) + ellipsis;
+      /// Calculate the midpoint or cursor position
+      int cursor = (low + high) ~/ 2;
 
+      /// Truncate the text at the cursor position
+      String truncated = text.substring(0, cursor) + ellipsis;
+
+      /// Calculate the width of the truncated text
       textPainter.text = TextSpan(text: truncated, style: style);
       textPainter.layout(maxWidth: maxWidth);
 
+      /// If the text fits within the maximum width, update the best truncation point
       if (textPainter.width < maxWidth) {
-        best = mid;
-        low = mid + 1;
+        /// Update the best truncation point
+        best = cursor;
+
+        /// Move the low cursor to the right
+        low = cursor + 1;
       } else {
-        high = mid - 1;
+        /// Move the high cursor to the left
+        high = cursor - 1;
       }
     }
 
+    /// Return the truncated text
     final result = text.substring(0, best - 1) + ellipsis;
-
-    // Trả về text đã cắt với ellipsis
     return result;
   }
 }
