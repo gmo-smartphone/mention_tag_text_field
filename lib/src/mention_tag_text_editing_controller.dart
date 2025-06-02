@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mention_tag_text_field/src/constants.dart';
+import 'package:mention_tag_text_field/src/custom_ellipsis_text.dart';
 import 'package:mention_tag_text_field/src/mention_tag_data.dart';
 import 'package:mention_tag_text_field/src/mention_tag_decoration.dart';
 import 'package:mention_tag_text_field/src/string_extensions.dart';
@@ -406,7 +407,7 @@ class MentionTagTextEditingController extends TextEditingController {
               text: prefix + mention.mention + suffix,
               style: mentionTagDecoration.mentionTextStyle,
               maxLines: 1,
-              ),
+            ),
           );
         }
 
