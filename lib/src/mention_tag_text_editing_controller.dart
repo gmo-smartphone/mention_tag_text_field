@@ -389,12 +389,8 @@ class MentionTagTextEditingController extends TextEditingController {
     final regexp = RegExp(
       '(?=${Constants.mentionEscape})|(?<=${Constants.mentionEscape})',
     );
-    final specialRegExp = RegExp(r'[\^$*.\[\]{}()?\-"!@#%&/\,><:;_~`+='
-        "'"
-        ']');
     final res = super.text.split(regexp);
     final List<MentionTagElement> tempList = List.from(_mentions);
-    final maxLengthUserName = mentionTagDecoration.maxLengthUserName;
 
     return TextSpan(
       style: style,
@@ -403,28 +399,14 @@ class MentionTagTextEditingController extends TextEditingController {
           final mention = tempList.removeAt(0);
           final prefix = mention.prefixSymbolInput ?? '';
           final suffix = mention.suffixSymbolInput ?? '';
-          final user = maxLengthUserName != null
-              ? mention.mention.length > maxLengthUserName
-                  ? mention.mention.replaceRange(
-                      maxLengthUserName -
-                          (mention.mention.contains(specialRegExp) ? 0 : 2),
-                      mention.mention.length,
-                      '...',
-                    )
-                  : mention.mention
-              : mention.mention;
+          // final user = _getName(mention.mention);
 
           return WidgetSpan(
-            child: Text(
-              prefix + user + suffix,
+            child: CustomEllipsisText(
+              text: prefix + mention.mention + suffix,
               style: mentionTagDecoration.mentionTextStyle,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              strutStyle: StrutStyle(
-                fontSize: mentionTagDecoration.mentionTextStyle.fontSize,
-                height: mentionTagDecoration.mentionTextStyle.height,
               ),
-            ),
           );
         }
 
