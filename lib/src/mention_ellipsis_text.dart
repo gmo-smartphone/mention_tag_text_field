@@ -72,6 +72,8 @@ class CustomEllipsisText extends StatelessWidget {
     }
 
     /// Variables for binary search
+    /// low and high are the cursors for the binary search
+    /// best is the best truncation point
     int low = 0;
     int high = text.length;
     int best = 0;
@@ -79,10 +81,10 @@ class CustomEllipsisText extends StatelessWidget {
     /// Binary search to find the best truncation point
     while (low <= high) {
       /// Calculate the midpoint or cursor position
-      int cursor = (low + high) ~/ 2;
+      int mid = (low + high) ~/ 2;
 
       /// Truncate the text at the cursor position
-      String truncated = text.substring(0, cursor) + ellipsis;
+      String truncated = text.substring(0, mid) + ellipsis;
 
       /// Calculate the width of the truncated text
       textPainter.text = TextSpan(text: truncated, style: style);
@@ -91,13 +93,13 @@ class CustomEllipsisText extends StatelessWidget {
       /// If the text fits within the maximum width, update the best truncation point
       if (textPainter.width < maxWidth) {
         /// Update the best truncation point
-        best = cursor;
+        best = mid;
 
         /// Move the low cursor to the right
-        low = cursor + 1;
+        low = mid + 1;
       } else {
         /// Move the high cursor to the left
-        high = cursor - 1;
+        high = mid - 1;
       }
     }
 
