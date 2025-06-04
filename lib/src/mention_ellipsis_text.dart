@@ -17,6 +17,11 @@ class CustomEllipsisText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
+      final mediaQueryData = MediaQuery.of(context);
+      final scale = mediaQueryData.textScaler.clamp(
+        minScaleFactor: 1,
+        maxScaleFactor: 1,
+      );
       final textPainter = TextPainter(
         text: TextSpan(text: text, style: style),
         textDirection: TextDirection.ltr,
@@ -38,6 +43,7 @@ class CustomEllipsisText extends StatelessWidget {
         return Text(
           truncatedText,
           style: style,
+          textScaler: scale,
           maxLines: maxLines,
         );
       }
@@ -45,6 +51,7 @@ class CustomEllipsisText extends StatelessWidget {
       return Text(
         text,
         style: style,
+        textScaler: scale,
         maxLines: maxLines,
       );
     });
